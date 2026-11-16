@@ -1,16 +1,23 @@
 Markdown
-## 📸 Capturas del Sistema y Funcionamiento
+## 📸 Capturas del Sistema y Explicación Técnica
 
 ### 1. Pantalla de Acceso (Login)
 ![Pantalla de Login](login.png)
 
-**¿Cómo funciona?**
-La interfaz de seguridad está construida con Bootstrap 5. El usuario ingresa al sistema validando sus credenciales (admin / 123) mediante una petición web tipo **POST**. El backend en Flask recibe estos datos, los valida, y si son correctos, crea una **sesión segura** que habilita el acceso al panel principal.
+**Funcionamiento del Login:**
+El sistema inicia con una interfaz de seguridad diseñada con Bootstrap 5. El usuario ingresa sus credenciales y, al enviar el formulario, los datos se transmiten al backend en Flask mediante el método **POST**. El servidor valida estáticamente el usuario "admin" y la contraseña "123". Si la validación es exitosa, se genera una **sesión encriptada** que autoriza el acceso a las rutas protegidas del sistema.
 
-### 2. Panel Principal (Registro y Reporte)
-![Panel de Gastos](panel.png)
+### 2. Módulo de Registro de Gastos
+![Registro de Gastos](registro.png)
 
-**¿Cómo funciona?**
-Esta pantalla está protegida por la sesión de usuario y se divide en dos procesos principales:
-* **Registro de Gastos (Formulario izquierdo):** Permite ingresar la fecha, descripción y monto. Al presionar el botón, Flask captura los datos y ejecuta una sentencia SQL `INSERT` para almacenarlos permanentemente en la base de datos **SQLite**.
-* **Visualización y Reporte (Tabla derecha):** Al cargar la página (petición **GET**), el sistema hace una consulta SQL `SELECT` para extraer el historial completo. Utiliza el motor de plantillas **Jinja2** para dibujar cada fila de la tabla de forma dinámica e incluye un cálculo en Python para mostrar la **sumatoria total** de los montos en la parte inferior.
+**Funcionamiento del Registro (Backend):**
+Esta sección está dedicada al ingreso de datos. El usuario completa la fecha, la descripción del gasto y el monto decimal. Al hacer clic en guardar, Flask captura esta información a través de una petición **POST**. Internamente, el sistema abre una conexión con la base de datos **SQLite**, ejecuta una sentencia `INSERT INTO gastos` para almacenar la información de forma persistente, y realiza un commit para confirmar los cambios.
+
+### 3. Visualización y Reporte de Movimientos
+![Reporte de Gastos](reporte.png)
+
+**Funcionamiento de la Visualización (Frontend y Lógica):**
+Al cargar la ruta principal del panel (mediante una petición **GET**), Flask ejecuta una consulta `SELECT * FROM gastos` ordenando los registros por fecha. 
+* **Generación dinámica:** Se utiliza el motor de plantillas **Jinja2** para iterar sobre los datos y dibujar cada fila de la tabla HTML automáticamente.
+* **Cálculo integrado:** Antes de enviar los datos a la vista, Python procesa la lista de gastos y calcula la sumatoria total, la cual se inyecta en el pie de la tabla.
+* **Exportación:** Se incluye un botón de impresión impulsado por JavaScript (`window.print()`) con reglas CSS específicas (`@media print`) que ocultan el menú y el formulario para generar un documento limpio en formato PDF o papel.
